@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selección de Skills</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: #f2f6fc;
+            display: flex;
+            justify-content: center;
+            padding: 25px 15px;
+        }
+        .container {
+            max-width: 1050px;
+            width: 100%;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
+            padding: 30px 35px;
+        }
+
+        /* --- Encabezado --- */
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #eef3fc;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            font-size: 32px;
+            color: #0b1e38;
+            letter-spacing: 2px;
+            font-weight: 800;
+        }
+        .header .sub {
+            /* vacío, sin subtítulo */
+            height: 0;
+            margin: 0;
+        }
+
+        /* Caja de instrucciones (texto personalizado) */
+        .info-box {
+            background: #f0f6ff;
+            border-radius: 16px;
+            padding: 18px 25px;
+            margin: 15px 0 25px 0;
+            border: 1px solid #d9e6ff;
+        }
+        .info-box p {
+            color: #1f3a5a;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        .info-box .highlight {
+            background: white;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border-left: 5px solid #1a5bbf;
+            margin-top: 10px;
+        }
+        .info-box .highlight strong {
+            color: #0b1e38;
+        }
+        .info-box .highlight .ejemplo {
+            background: #eef4fa;
+            padding: 6px 14px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+        .info-box .highlight .lapiz {
+            background: #fef3d7;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            color: #8a6d1b;
+        }
+
+        /* --- Formulario --- */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: 700;
+            color: #1a2d48;
+            display: block;
+            margin-bottom: 6px;
+            font-size: 15px;
+        }
+        select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #dae0ec;
+            border-radius: 14px;
+            font-size: 16px;
+            background: white;
+            transition: 0.2s;
+        }
+        select:focus {
+            border-color: #1a5bbf;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(26, 91, 191, 0.1);
+        }
+        .progress {
+            background: #e8edf6;
+            height: 6px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #1a5bbf;
+            border-radius: 10px;
+            width: 0%;
+            transition: 0.4s;
+        }
+
+        .skill-section {
+            background: #f9fbfe;
+            border-radius: 16px;
+            padding: 20px 22px;
+            margin-bottom: 28px;
+            border: 1px solid #eef3fa;
+        }
+        .skill-section h2 {
+            font-size: 20px;
+            color: #0b1e38;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .skill-section h2 .badge {
+            background: #eaf1fd;
+            color: #1a5bbf;
+            font-size: 14px;
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-weight: 600;
+        }
+        .counter-box {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a3d7a;
+            background: white;
+            padding: 4px 16px;
+            border-radius: 30px;
+            border: 1px solid #d6e2f5;
+        }
+
+        /* Grilla a 2 columnas */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .skill-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            background: white;
+            border-radius: 12px;
+            border: 1.5px solid #e4ebf6;
+            transition: 0.15s;
+            cursor: pointer;
+        }
+        .skill-item:hover {
+            border-color: #b3cae8;
+            background: #f5f9ff;
+        }
+        .skill-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #1a5bbf;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .skill-item label {
+            font-weight: 500;
+            color: #1f314a;
+            cursor: pointer;
+            margin-bottom: 0;
+            font-size: 14px;
+            width: 100%;
+        }
+        .skill-item.checked {
+            background: #e5efff;
+            border-color: #1a5bbf;
+        }
+
+        /* Botón para añadir skill personalizada */
+        .add-skill-area {
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            background: #f3f7fd;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px dashed #b3cae8;
+        }
+        .add-skill-area button.add-btn {
+            background: none;
+            border: none;
+            color: #1a5bbf;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            transition: 0.15s;
+        }
+        .add-skill-area button.add-btn:hover {
+            background: #dce4f5;
+        }
+        .add-skill-area input[type="text"] {
+            flex: 1;
+            min-width: 150px;
+            padding: 8px 14px;
+            border: 1.5px solid #d6e0ef;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            transition: 0.2s;
+        }
+        .add-skill-area input[type="text"]:focus {
+            border-color: #1a5bbf;
+        }
+        .add-skill-area button.confirm-add {
+            background: #1a5bbf;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .add-skill-area button.confirm-add:hover {
+            background: #0f3d7a;
+        }
+        .add-skill-area .custom-badge {
+            background: #eaf1fd;
+            color: #1a5bbf;
+            font-size: 12px;
+            padding: 2px 10px;
+            border-radius: 12px;
+            margin-left: 6px;
+        }
+
+        @media (max-width: 600px) {
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+            .add-skill-area {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        .submit-btn {
+            background: #1a5bbf;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 40px;
+            font-size: 19px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+        .submit-btn:hover {
+            background: #0f3d7a;
+            transform: scale(1.01);
+            box-shadow: 0 8px 20px rgba(26, 91, 191, 0.25);
+        }
+
+        #status {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 14px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+        .error-text {
+            color: #b02a37;
+            font-size: 14px;
+            margin-top: 15px;
+            padding: 10px;
+            background: #f8d7da;
+            border-radius: 10px;
+            display: none;
+            font-weight: 500;
+        }
+        footer {
+            margin-top: 30px;
+            font-size: 13px;
+            color: #7b8aa4;
+            text-align: center;
+            border-top: 1px solid #e4ebf6;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ========================================================= -->
+        <!--  ENCABEZADO: TÍTULO EN MAYÚSCULAS, SIN SUBTÍTULO           -->
+        <!-- ========================================================= -->
+        <div class="header">
+            <h1>SELECCION DE SKILLS</h1>
+            <div class="sub"></div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!--  TEXTO PERSONALIZADO (PARIENTE) CON INSTRUCCIONES          -->
+        <!-- ========================================================= -->
+        <div class="info-box">
+            <p>👋 <strong>¡Hola Pariente!</strong> Este formulario está pensado para que puedas elegir qué skills son importantes para ti en cada puesto de trabajo, de esta manera ajustaremos los puestos a tu medida.</p>
+            <p>Marca con un <strong>tick (✓)</strong> todas las habilidades técnicas (Hard) y blandas (Soft) que creas <strong>indispensables</strong> para el puesto que selecciones.</p>
+            <div class="highlight">
+                📌 <strong>¿Cómo funciona?</strong><br>
+                ✅ Mínimo <strong>5 ticks</strong> en cada bloque (Hard y Soft) para poder enviar. <em>(con esto podré crear el Gráfico RADAR, Tipo Estadística Deportiva).</em><br>
+                ✅ Si consideras que son <strong>más de 5</strong>, ¡dale sin miedo! Puedes marcar todas las que quieras (hasta 10).<br>
+                <div class="ejemplo">
+                    💡 <strong>Ejemplo:</strong> Si para "Gerente General" crees que 7 habilidades técnicas son clave, marcas esas 7 y listo.<br>
+                    <span class="lapiz">✏️ Ojo: "Si crees que hay habilidades más importantes que no están en la lista, puedes añadir haciendo clic en el lapicero para añadir otras skills".</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!--  SELECCIÓN DE PUESTO                                       -->
+        <!-- ========================================================= -->
+        <div class="form-group">
+            <label>📌 Selecciona el Puesto:</label>
+            <select id="roleSelect"></select>
+        </div>
+        <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+
+        <form id="skillForm">
+            <div id="skillsContainer"></div>
+            <button type="submit" class="submit-btn">📤 Guardar selección</button>
+        </form>
+        <div id="status"></div>
+        <footer>Los datos se guardan al toque en la nube. Cero estrés.</footer>
+    </div>
+
+    <script>
+        // --------------------------------------------------------------
+        // 1. BASE DE DATOS DE SKILLS (25 PUESTOS)
+        //    Los nombres NO tienen números, solo el texto.
+        // --------------------------------------------------------------
+        const skillsDB = {
+            "Gerente General": {
+                hard: ["Planificación Estratégica", "Análisis Financiero", "Gestión de Proyectos", "Transformación Digital y Modernización", "Gestión de Riesgos Empresariales", "Conocimiento del Mercado y Sector", "Evaluación de Inversiones", "Negociación de Contratos", "Gestión de Sostenibilidad y RSE", "Dirección por Objetivos"],
+                soft: ["Liderazgo", "Toma de Decisiones", "Comunicación Asertiva", "Pensamiento Estratégico", "Inteligencia Emocional", "Delegación y Confianza", "Adaptabilidad al Cambio", "Negociación y Manejo de Conflictos", "Orientación a Resultados", "Visión de Futuro"]
+            },
+            "Gerente de Finanzas": {
+                hard: ["Presupuestos y Flujo de Caja", "Análisis de Estados Financieros", "Normas Contables", "Excel y Modelos Financieros", "Planificación Tributaria", "Auditoría y Control Interno", "Sistemas de Gestión Empresarial", "Rentabilidad por Área", "Gestión de Seguros", "Informes Financieros"],
+                soft: ["Rigurosidad y Precisión", "Integridad y Confidencialidad", "Pensamiento Analítico", "Proactividad y Eficiencia", "Comunicación de Datos", "Tolerancia a la Presión", "Capacidad de Síntesis", "Mejora Continua", "Trabajo en Equipo", "Cumplimiento de Plazos"]
+            },
+            "Gerente de Talento Humano": {
+                hard: ["Legislación Laboral", "Gestión de Nómina", "Reclutamiento y Selección", "Planes de Carrera", "Evaluación de Desempeño", "Clima y Cultura Organizacional", "Análisis de Datos de Personal", "Relaciones Sindicales", "Políticas de Bienestar", "Sistemas de Gestión de RH"],
+                soft: ["Empatía y Escucha", "Confidencialidad", "Asertividad en Feedback", "Imparcialidad", "Mediación de Conflictos", "Visión Estratégica del Negocio", "Capacidad de Influir", "Adaptabilidad Generacional", "Sentido de Urgencia", "Negociación"]
+            },
+            "Gerente de Marketing y Ventas": {
+                hard: ["Marketing Digital (SEO/SEM)", "CRM y Gestión de Clientes", "Investigación de Mercado", "Presupuestos de Ventas", "Canales de Distribución", "Branding y Posicionamiento", "Automatización de Marketing", "Organización de Eventos", "Rentabilidad de Productos", "Analítica Web"],
+                soft: ["Creatividad", "Persuasión y Cierre", "Orientación al Cliente", "Resiliencia ante el Rechazo", "Trabajo en Equipo Interdisciplinario", "Comunicación Efectiva", "Mentalidad Analítica", "Proactividad Comercial", "Storytelling", "Gestión del Tiempo"]
+            },
+            "Gerente de Alianzas Estratégicas": {
+                hard: ["Gestión de Contratos", "Evaluación de Activos", "Derecho Societario", "Debida Diligencia (Due Diligence)", "Relaciones Institucionales", "Inversiones a Largo Plazo", "Propiedad Intelectual", "Presentaciones Ejecutivas", "Análisis de Mercados Financieros", "Networking B2B"],
+                soft: ["Construcción de Confianza", "Visión de Largo Plazo", "Negociación de Alto Nivel", "Discreción y Reserva", "Adaptabilidad Cultural", "Persuasión Estratégica", "Visión Sistémica", "Detección de Sinergias", "Comunicación Diplomática", "Paciencia en Procesos"]
+            },
+            "Gerente de Desarrollo Organizacional": {
+                hard: ["Gestión del Cambio", "Diseño de Estructuras Organizacionales", "Modelo de Competencias", "Coaching Ejecutivo", "Diseño de Capacitaciones", "Evaluación de Clima", "Metodologías Ágiles", "Indicadores de Gestión RH", "Psicología Organizacional", "Gamificación y e-Learning"],
+                soft: ["Visión Holística", "Empatía y Conexión", "Liderazgo Servicial", "Paciencia en Procesos", "Facilitación de Talleres", "Escucha Activa", "Pensamiento Crítico", "Capacidad Inspiradora", "Flexibilidad", "Ética Profesional"]
+            },
+            "Jefe de Proyecto": {
+                hard: ["Metodologías de Proyectos (PMI/Ágil)", "Cronogramas y Planificación", "Gestión de Presupuestos", "Herramientas de Gestión (Jira/Trello)", "Gestión de Riesgos", "Control de Alcance", "Contratación de Proveedores", "Informes de Avance", "Gestión de Calidad", "Asignación de Recursos"],
+                soft: ["Liderazgo de Equipos", "Comunicación con Interesados", "Resolución de Problemas", "Tolerancia a la Presión", "Organización y Método", "Negociación de Expectativas", "Toma de Decisiones con Datos", "Adaptabilidad a Cambios", "Delegación Efectiva", "Enfoque en Entregables"]
+            },
+            "Encargado de Área Agrícola": {
+                hard: ["Manejo de Cultivos", "Sistemas de Riego", "Control de Plagas (MIP)", "Fertilización y Nutrición", "Análisis de Suelos", "Manejo de Maquinaria Agrícola", "Planificación de Cosechas", "Software Agrícola (GPS)", "Inocuidad Alimentaria", "Inventario de Insumos"],
+                soft: ["Observación Detallada", "Decisiones ante Clima Adverso", "Supervisión de Cuadrillas", "Comunicación con Operarios", "Prevención de Contingencias", "Paciencia en Procesos", "Trabajo en Equipo", "Resolución Práctica en Terreno", "Compromiso con Ciclos", "Registro de Datos de Campo"]
+            },
+            "Encargado de Área Pecuaria": {
+                hard: ["Manejo de Especies (bovinos/porcinos)", "Sanidad y Vacunación", "Reproducción e Inseminación", "Nutrición y Raciones", "Manejo de Pasturas", "Bienestar Animal", "Trazabilidad Ganadera", "Registros Productivos", "Primeros Auxilios Veterinarios", "Bioseguridad"],
+                soft: ["Detección de Anomalías", "Paciencia y Trato Ético", "Supervisión de Personal", "Decisiones en Emergencias", "Comunicación con Veterinarios", "Organización de Calendarios", "Resiliencia ante Pérdidas", "Trabajo con Otras Áreas", "Pulcritud en Registros", "Adaptación a Intemperie"]
+            },
+            "Encargado de Área de Maquinaria": {
+                hard: ["Mecánica de Motores Diésel", "Hidráulica y Neumática", "Electricidad de Maquinaria", "Mantenimiento Preventivo", "Diagnóstico Electrónico", "Soldadura y Metalmecánica", "Gestión de Repuestos", "Normas de Seguridad en Taller", "Gestión de Flota", "Lectura de Planos"],
+                soft: ["Precisión en Diagnósticos", "Resolución bajo Presión (Paradas)", "Planificación de Mantenciones", "Comunicación con Operadores", "Prevención de Fallas", "Trabajo en Equipo", "Cumplimiento de Plazos", "Aprendizaje Tecnológico", "Paciencia en Reparaciones", "Conciencia de Seguridad"]
+            },
+            "Encargado de Área Forestal": {
+                hard: ["Silvicultura Sostenible", "Inventario y Cubicación", "Identificación de Especies y Plagas", "Manejo de GPS y SIG", "Planificación de Cortas", "Cumplimiento Ambiental", "Control de Incendios", "Viveros y Reforestación", "Manejo de Motosierra", "Elaboración de Informes Técnicos"],
+                soft: ["Orientación a la Conservación", "Decisiones en Terreno Difícil", "Liderazgo de Brigadas", "Comunicación con Autoridades", "Paciencia en Ciclos Forestales", "Resistencia Física", "Observación del Ecosistema", "Trabajo Interdisciplinario", "Ética Ambiental", "Reacción ante Emergencias"]
+            },
+            "Encargado de Seguridad/Vigilancia": {
+                hard: ["Protocolos de Seguridad Física", "CCTV y Alarmas", "Normativas de Seguridad Laboral", "Planes de Emergencia", "Manejo de Extintores", "Rondines y Reportes", "Gestión de Equipos de Seguridad", "Legislación de Seguridad", "Control de Accesos y Llaves", "Sistemas de Comunicación"],
+                soft: ["Atención y Vigilancia Constante", "Integridad y Confianza", "Serenidad en Crisis", "Comunicación Clara y Cortés", "Reacción Rápida", "Discreción", "Asertividad para Imponer Normas", "Trabajo en Equipo", "Resolución Pacífica de Conflictos", "Puntualidad Extrema"]
+            },
+            "Contador": {
+                hard: ["Contabilidad General y de Costos", "Elaboración de Estados Financieros", "Declaraciones Tributarias", "Conciliaciones Bancarias", "Manejo de Sistemas Contables", "Auditoría Interna", "Cálculo de Depreciaciones", "Gestión de Cuentas", "Flujo de Caja", "Normas Contables"],
+                soft: ["Honestidad y Ética", "Atención al Detalle", "Organización y Orden", "Confidencialidad", "Trabajo bajo Presión en Cierres", "Comunicación con Otras Áreas", "Proactividad en Ahorro Fiscal", "Paciencia en Rutina", "Pensamiento Analítico", "Cumplimiento de Plazos Legales"]
+            },
+            "Asistente de Finanzas": {
+                hard: ["Excel Avanzado (Tablas Dinámicas)", "Registro de Facturación", "Conciliaciones Bancarias", "Manejo de Sistemas Contables", "Elaboración de Reportes de Gastos", "Control de Caja Chica", "Gestión de Pagos a Proveedores", "Archivo Digital", "Herramientas Ofimáticas", "Apoyo en Presupuestos"],
+                soft: ["Orden y Limpieza Documental", "Responsabilidad y Puntualidad", "Precisión y Cero Errores", "Confidencialidad", "Proactividad ante Discrepancias", "Comunicación con Proveedores", "Trabajo en Equipo", "Adaptabilidad a Sistemas", "Paciencia en Tareas Repetitivas", "Orientación al Servicio"]
+            },
+            "Asistente de Marketing y Ventas": {
+                hard: ["Community Management", "Edición de Imágenes (Canva)", "Redacción de Contenidos", "Manejo de CRM", "Organización de Eventos", "Seguimiento de Pedidos", "Email Marketing", "Métricas de Redes", "Control de Merchandising", "Paquete Office"],
+                soft: ["Creatividad e Ideas", "Redacción Impecable", "Atención y Empatía con Clientes", "Proactividad para Generar Leads", "Trabajo en Equipo", "Gestión de Múltiples Tareas", "Adaptación a Tendencias", "Resiliencia a Críticas", "Orientación a Metas", "Amabilidad y Trato Cordial"]
+            },
+            "Asistente de Recursos Humanos": {
+                hard: ["Cálculo de Nómina", "Gestión de Contratos", "Afiliaciones a Seguridad Social", "Archivo de Expedientes", "Apoyo en Reclutamiento", "Control de Asistencia", "Elaboración de Comunicados", "Gestión de Beneficios", "Sistemas de Personal", "Registro de Evaluaciones"],
+                soft: ["Empatía y Trato Cálido", "Confidencialidad", "Organización de Documentos", "Comunicación Asertiva", "Paciencia para Resolver Dudas", "Proactividad en Procesos", "Trabajo en Equipo", "Manejo de Situaciones Delicadas", "Puntualidad", "Imparcialidad"]
+            },
+            "Asistente Agrícola": {
+                hard: ["Siembra y Cosecha", "Herramientas Manuales", "Aplicación de Fertilizantes", "Mantenimiento de Riego", "Control de Malezas", "Registro de Producción", "Mantenimiento de Invernaderos", "Primeros Auxilios", "Uso de Equipos de Protección", "Identificación de Plagas"],
+                soft: ["Disposición al Aire Libre", "Resistencia Física", "Atención a Instrucciones", "Trabajo en Equipo", "Responsabilidad con Insumos", "Puntualidad", "Capacidad de Aprendizaje", "Comunicación Respetuosa", "Proactividad", "Paciencia en Labores Repetitivas"]
+            },
+            "Asistente Pecuario": {
+                hard: ["Alimentación y Suministro de Agua", "Limpieza de Corrales", "Identificación y Marcaje", "Apoyo en Vacunaciones", "Manejo para Traslados", "Mantenimiento de Cercos", "Registro de Pesos", "Bienestar Animal", "Manejo de Equipos de Ordeño", "Preparación de Raciones"],
+                soft: ["Respeto y Cuidado Animal", "Paciencia y Trato Calmado", "Observación de Comportamientos", "Resistencia Física", "Trabajo en Equipo", "Pulcritud", "Reporte de Novedades", "Puntualidad en Horarios", "Seguimiento de Protocolos", "Adaptación al Clima"]
+            },
+            "Asistente de Maquinaria": {
+                hard: ["Lubricación y Engrase", "Limpieza de Filtros", "Cambio de Neumáticos", "Manejo de Herramientas de Taller", "Registro de Horas de Trabajo", "Soldadura Menor", "Control de Consumibles", "Lavado a Presión", "Apoyo en Traslados", "Normas de Seguridad"],
+                soft: ["Orden y Limpieza", "Atención a Ruidos Anormales", "Cuidado de Herramientas", "Prevención de Fallas", "Trabajo en Equipo", "Comunicación de Incidencias", "Puntualidad", "Capacidad de Aprendizaje", "Paciencia en Tareas Tediosas", "Uso de Equipos de Protección"]
+            },
+            "Asistente Forestal": {
+                hard: ["Plantación y Poda", "Mantenimiento de Viveros", "Identificación de Especies", "Medición de Árboles", "Limpieza de Cortafuegos", "Manejo de Herramientas Manuales", "Aplicación de Herbicidas", "Registro de Crecimiento", "Mantenimiento de Cercos", "Recolección de Semillas"],
+                soft: ["Disposición a Caminatas", "Resistencia Física", "Respeto por la Naturaleza", "Trabajo en Equipo", "Atención a Indicaciones", "Proactividad en Limpieza", "Paciencia en Reforestación", "Cuidado de Herramientas", "Orientación en el Terreno", "Reporte de Riesgos"]
+            },
+            "Motosierrista": {
+                hard: ["Manejo Experto de Motosierra", "Afilado de Cadena", "Tala Direccional", "Apeo y Derribo", "Trozado de Madera", "Normas de Seguridad", "Uso de Equipos de Protección", "Mantenimiento Básico del Motor", "Identificación de Árboles de Riesgo", "Técnicas de Extracción"],
+                soft: ["Precaución y Conciencia de Riesgo", "Serenidad en Maniobras", "Concentración Absoluta", "Uso Obligatorio de EPP", "Decisiones Rápidas y Seguras", "Resistencia Física", "Comunicación con el Equipo", "Paciencia en Cortes Precisos", "Trabajo en Equipo en Arrastre", "Compromiso con el Bosque"]
+            },
+            "Guardia": {
+                hard: ["Control de Accesos", "Vigilancia con CCTV", "Rondines de Seguridad", "Manejo de Extintores", "Primeros Auxilios y RCP", "Elaboración de Reportes", "Uso de Radios", "Protocolos de Emergencia", "Control de Llaves", "Manejo de Iluminación"],
+                soft: ["Atención y Vigilancia Constante", "Integridad y Honradez", "Reacción ante Emergencias", "Comunicación Cortés", "Serenidad en Conflictos", "Discreción", "Autodisciplina", "Trabajo en Equipo", "Asertividad para Hacer Cumplir Normas", "Paciencia en Turnos Largos"]
+            },
+            "Cocinero(a)": {
+                hard: ["Preparación de Menús Balanceados", "Manejo de Cocina Industrial", "Higiene y Manipulación de Alimentos", "Control de Inventario", "Nutrición Básica", "Técnicas de Corte", "Cadena de Frío", "Cocina para Personal o Eventos", "Sanitización de Cocina", "Manejo de Residuos"],
+                soft: ["Higiene Personal", "Organización de Menús", "Trabajo en Equipo con Auxiliares", "Tolerancia al Calor", "Creatividad Culinaria", "Cumplimiento de Horarios", "Comunicación sobre Alergias", "Trabajo Bajo Presión", "Amabilidad al Servir", "Ahorro de Insumos"]
+            },
+            "Jardinero": {
+                hard: ["Poda de Árboles y Setos", "Manejo de Cortacésped", "Sistemas de Riego", "Control de Plagas en Jardines", "Abono y Fertilización", "Diseño Básico de Jardines", "Mantenimiento de Herramientas", "Recolección de Residuos Verdes", "Identificación de Especies", "Preparación de Sustratos"],
+                soft: ["Paciencia y Detalle Estético", "Responsabilidad con Áreas Verdes", "Creatividad Paisajística", "Trabajo en Equipo", "Comunicación de Requerimientos", "Disposición al Aire Libre", "Proactividad en Mejoras", "Puntualidad", "Aprendizaje de Nuevas Especies", "Conciencia Ecológica"]
+            },
+            "Técnico Multioficio": {
+                hard: ["Plomería Básica", "Electricidad Básica", "Carpintería Simple", "Albañilería Menor", "Soldadura y Metalmecánica", "Cerrajería", "Pintura y Acabados", "Instalación de Artefactos", "Manejo de Herramientas", "Diagnóstico de Averías"],
+                soft: ["Resolución Práctica de Problemas", "Versatilidad y Adaptación", "Atención al Detalle", "Comunicación con Usuarios", "Responsabilidad con Materiales", "Prevención de Averías", "Paciencia en Reparaciones", "Trabajo en Equipo Técnico", "Puntualidad", "Conciencia de Seguridad"]
+            }
+        };
+
+        // --------------------------------------------------------------
+        // 2. LÓGICA PRINCIPAL (renderizado, contadores, añadir skills)
+        // --------------------------------------------------------------
+        const roleSelect = document.getElementById('roleSelect');
+        const container = document.getElementById('skillsContainer');
+        const form = document.getElementById('skillForm');
+        const status = document.getElementById('status');
+        const progressBar = document.getElementById('progressBar');
+        const roles = Object.keys(skillsDB);
+
+        // Llenar select
+        roles.forEach(role => {
+            const opt = document.createElement('option');
+            opt.value = role;
+            opt.textContent = role;
+            roleSelect.appendChild(opt);
+        });
+
+        // Función para generar un ID único a partir de un nombre (para checkboxes)
+        function sanitizeId(name) {
+            return name.replace(/[^a-zA-Z0-9]/g, '_');
+        }
+
+        // Variable para almacenar las skills personalizadas (por tipo y puesto)
+        // Estructura: { role: { hard: [nombres], soft: [nombres] } }
+        let customSkills = {};
+
+        function renderSkills(role) {
+            const data = skillsDB[role];
+            if (!data) return;
+            
+            // Inicializar customSkills para este rol si no existe
+            if (!customSkills[role]) {
+                customSkills[role] = { hard: [], soft: [] };
+            }
+            const customHard = customSkills[role].hard || [];
+            const customSoft = customSkills[role].soft || [];
+
+            // Combinar base + personalizadas (las personalizadas van al final)
+            const allHard = [...data.hard, ...customHard];
+            const allSoft = [...data.soft, ...customSoft];
+
+            let html = '';
+
+            // --- Hard Skills ---
+            html += `<div class="skill-section" id="hardSection">
+                        <h2>
+                            🔹 Hard Skills (Técnicas) 
+                            <span class="counter-box" id="hardCounter">Elegidas: 0 (mínimo 5)</span>
+                        </h2>
+                        <div class="skills-grid" id="hardGrid">`;
+            allHard.forEach((skill, index) => {
+                const isCustom = index >= data.hard.length;
+                const id = sanitizeId(skill);
+                html += `<div class="skill-item" id="hard_wrapper_${id}">
+                            <input type="checkbox" name="hard" value="${skill}" id="hard_${id}">
+                            <label for="hard_${id}">${skill} ${isCustom ? '<span class="custom-badge">✏️ añadida</span>' : ''}</label>
+                        </div>`;
+            });
+            html += `</div>
+                    <div class="error-text" id="hardError">⚠️ Mínimo 5 habilidades técnicas, ¡pero puedes marcar más!</div>
+                    <div class="add-skill-area">
+                        <button type="button" class="add-btn" onclick="toggleAddSkill('hard')">✏️ Añadir skill</button>
+                        <div id="addHardInput" style="display:none; flex:1; display:none; gap:8px; align-items:center; flex-wrap:wrap;">
+                            <input type="text" id="newHardSkill" placeholder="Escribe la nueva habilidad..." style="flex:1; min-width:150px; padding:8px 14px; border:1.5px solid #d6e0ef; border-radius:10px; font-size:14px;">
+                            <button type="button" class="confirm-add" onclick="addCustomSkill('hard')">Agregar</button>
+                            <button type="button" style="background:transparent; border:none; color:#7b8aa4; cursor:pointer;" onclick="toggleAddSkill('hard')">Cancelar</button>
+                        </div>
+                    </div>
+                    </div>`;
+
+            // --- Soft Skills ---
+            html += `<div class="skill-section" id="softSection">
+                        <h2>
+                            🔸 Soft Skills (Actitudinales) 
+                            <span class="counter-box" id="softCounter">Elegidas: 0 (mínimo 5)</span>
+                        </h2>
+                        <div class="skills-grid" id="softGrid">`;
+            allSoft.forEach((skill, index) => {
+                const isCustom = index >= data.soft.length;
+                const id = sanitizeId(skill);
+                html += `<div class="skill-item" id="soft_wrapper_${id}">
+                            <input type="checkbox" name="soft" value="${skill}" id="soft_${id}">
+                            <label for="soft_${id}">${skill} ${isCustom ? '<span class="custom-badge">✏️ añadida</span>' : ''}</label>
+                        </div>`;
+            });
+            html += `</div>
+                    <div class="error-text" id="softError">⚠️ Mínimo 5 habilidades blandas, ¡pero puedes marcar más!</div>
+                    <div class="add-skill-area">
+                        <button type="button" class="add-btn" onclick="toggleAddSkill('soft')">✏️ Añadir skill</button>
+                        <div id="addSoftInput" style="display:none; flex:1; display:none; gap:8px; align-items:center; flex-wrap:wrap;">
+                            <input type="text" id="newSoftSkill" placeholder="Escribe la nueva habilidad..." style="flex:1; min-width:150px; padding:8px 14px; border:1.5px solid #d6e0ef; border-radius:10px; font-size:14px;">
+                            <button type="button" class="confirm-add" onclick="addCustomSkill('soft')">Agregar</button>
+                            <button type="button" style="background:transparent; border:none; color:#7b8aa4; cursor:pointer;" onclick="toggleAddSkill('soft')">Cancelar</button>
+                        </div>
+                    </div>
+                    </div>`;
+
+            container.innerHTML = html;
+
+            // Actualizar barra de progreso
+            const idx = roles.indexOf(role);
+            progressBar.style.width = `${((idx + 1) / roles.length) * 100}%`;
+
+            // Agregar listeners a los checkboxes
+            attachCheckListeners();
+            updateCounters();
+        }
+
+        // Funciones para manejar skills personalizadas
+        window.toggleAddSkill = function(type) {
+            const inputId = (type === 'hard') ? 'addHardInput' : 'addSoftInput';
+            const el = document.getElementById(inputId);
+            if (el.style.display === 'none' || el.style.display === '') {
+                el.style.display = 'flex';
+            } else {
+                el.style.display = 'none';
+            }
+            // Limpiar campo
+            const fieldId = (type === 'hard') ? 'newHardSkill' : 'newSoftSkill';
+            document.getElementById(fieldId).value = '';
+        };
+
+        window.addCustomSkill = function(type) {
+            const fieldId = (type === 'hard') ? 'newHardSkill' : 'newSoftSkill';
+            const input = document.getElementById(fieldId);
+            const newSkill = input.value.trim();
+            if (newSkill === '') {
+                alert('Por favor escribe el nombre de la habilidad.');
+                return;
+            }
+            // Verificar que no esté duplicada
+            const currentRole = roleSelect.value;
+            const data = skillsDB[currentRole];
+            const allExisting = (type === 'hard') ? [...data.hard, ...(customSkills[currentRole]?.hard || [])] : [...data.soft, ...(customSkills[currentRole]?.soft || [])];
+            if (allExisting.some(s => s.toLowerCase() === newSkill.toLowerCase())) {
+                alert('Esa habilidad ya está en la lista.');
+                return;
+            }
+
+            // Agregar a customSkills
+            if (!customSkills[currentRole]) customSkills[currentRole] = { hard: [], soft: [] };
+            if (type === 'hard') {
+                customSkills[currentRole].hard.push(newSkill);
+            } else {
+                customSkills[currentRole].soft.push(newSkill);
+            }
+
+            // Re-renderizar
+            renderSkills(currentRole);
+            // Ocultar el input
+            const inputId = (type === 'hard') ? 'addHardInput' : 'addSoftInput';
+            document.getElementById(inputId).style.display = 'none';
+        };
+
+        function attachCheckListeners() {
+            document.querySelectorAll('.skill-item input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', function() {
+                    const wrapper = this.closest('.skill-item');
+                    if (this.checked) wrapper.classList.add('checked');
+                    else wrapper.classList.remove('checked');
+                    updateCounters();
+                });
+            });
+        }
+
+        function updateCounters() {
+            const hardChecked = document.querySelectorAll('input[name="hard"]:checked').length;
+            const softChecked = document.querySelectorAll('input[name="soft"]:checked').length;
+            
+            const hardCounter = document.getElementById('hardCounter');
+            const softCounter = document.getElementById('softCounter');
+            if (hardCounter) hardCounter.textContent = `Elegidas: ${hardChecked} (mínimo 5)`;
+            if (softCounter) softCounter.textContent = `Elegidas: ${softChecked} (mínimo 5)`;
+            
+            const hardErr = document.getElementById('hardError');
+            const softErr = document.getElementById('softError');
+            if (hardErr) hardErr.style.display = (hardChecked < 5) ? 'block' : 'none';
+            if (softErr) softErr.style.display = (softChecked < 5) ? 'block' : 'none';
+        }
+
+        // Cambio de puesto
+        roleSelect.addEventListener('change', (e) => {
+            if (e.target.value) {
+                renderSkills(e.target.value);
+                status.style.display = 'none';
+            }
+        });
+
+        // Cargar primer rol
+        if (roles.length > 0) {
+            roleSelect.value = roles[0];
+            renderSkills(roles[0]);
+        }
+
+        // --------------------------------------------------------------
+        // 3. ENVÍO AL BACKEND (con habilidades personalizadas)
+        // --------------------------------------------------------------
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwtvNlDfNw5cvVEdL-2R48CMNgTOOPfhotF3DhBVwiArZfwaCME_0KblAWRq_LrCoT2Ow/exec';
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const role = roleSelect.value;
+            const data = skillsDB[role];
+            if (!data) return;
+
+            // Obtener todos los checkboxes marcados (incluyen personalizadas)
+            const hardChecked = document.querySelectorAll('input[name="hard"]:checked');
+            const softChecked = document.querySelectorAll('input[name="soft"]:checked');
+
+            if (hardChecked.length < 5 || softChecked.length < 5) {
+                status.style.display = 'block';
+                status.style.background = '#fff3cd';
+                status.style.color = '#856404';
+                status.textContent = '⚠️ Espera... aún faltan ticks. Recuerda: mínimo 5 en cada bloque. Si ya las marcaste todas y sigues viendo esto, revisa que sean al menos 5.';
+                return;
+            }
+
+            // Arrays de nombres seleccionados
+            const selectedHard = Array.from(hardChecked).map(cb => cb.value);
+            const selectedSoft = Array.from(softChecked).map(cb => cb.value);
+
+            // Objeto con Sí/No para las habilidades BASE (10 primeras de cada lista)
+            const hardBase = data.hard;
+            const softBase = data.soft;
+            const hardStatus = {};
+            hardBase.forEach(skill => hardStatus[skill] = selectedHard.includes(skill) ? 'Sí' : 'No');
+            const softStatus = {};
+            softBase.forEach(skill => softStatus[skill] = selectedSoft.includes(skill) ? 'Sí' : 'No');
+
+            // Habilidades personalizadas (las que no están en la base)
+            const customHardList = customSkills[role]?.hard || [];
+            const customSoftList = customSkills[role]?.soft || [];
+            // Filtramos solo las que fueron marcadas
+            const selectedCustomHard = selectedHard.filter(s => customHardList.includes(s));
+            const selectedCustomSoft = selectedSoft.filter(s => customSoftList.includes(s));
+
+            const payload = {
+                role: role,
+                timestamp: new Date().toISOString(),
+                hardStatus: hardStatus,
+                softStatus: softStatus,
+                hardExtra: selectedCustomHard,   // nombres de las personalizadas marcadas
+                softExtra: selectedCustomSoft
+            };
+
+            status.style.display = 'block';
+            status.style.background = '#cce5ff';
+            status.style.color = '#004085';
+            status.textContent = '⏳ Guardando... un momentito.';
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                status.style.background = '#d4edda';
+                status.style.color = '#155724';
+                status.textContent = '✅ ¡Listo! Tus selecciones se guardaron al toque. Podés seguir con el próximo puesto.';
+            } catch (error) {
+                status.style.background = '#f8d7da';
+                status.style.color = '#721c24';
+                status.textContent = '❌ Uy, hubo un error de conexión. Revisá la URL del script.';
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>
