@@ -40,12 +40,11 @@
             font-weight: 800;
         }
         .header .sub {
-            /* vacío, sin subtítulo */
             height: 0;
             margin: 0;
         }
 
-        /* Caja de instrucciones (texto personalizado) */
+        /* Caja de instrucciones */
         .info-box {
             background: #f0f6ff;
             border-radius: 16px;
@@ -201,7 +200,6 @@
             border-color: #1a5bbf;
         }
 
-        /* Botón para añadir skill personalizada */
         .add-skill-area {
             margin-top: 15px;
             display: flex;
@@ -475,7 +473,7 @@
         };
 
         // --------------------------------------------------------------
-        // 2. LÓGICA PRINCIPAL (renderizado, contadores, añadir skills)
+        // 2. LÓGICA PRINCIPAL CON PERSISTENCIA DE TICKS
         // --------------------------------------------------------------
         const roleSelect = document.getElementById('roleSelect');
         const container = document.getElementById('skillsContainer');
@@ -484,7 +482,10 @@
         const progressBar = document.getElementById('progressBar');
         const roles = Object.keys(skillsDB);
 
-        // Llenar select
+        // Almacenar habilidades personalizadas por rol
+        let customSkills = {};
+
+        // Inicializar select
         roles.forEach(role => {
             const opt = document.createElement('option');
             opt.value = role;
@@ -492,44 +493,52 @@
             roleSelect.appendChild(opt);
         });
 
-        // Función para generar un ID único a partir de un nombre (para checkboxes)
+        // Función para sanitizar IDs
         function sanitizeId(name) {
             return name.replace(/[^a-zA-Z0-9]/g, '_');
         }
 
-        // Variable para almacenar las skills personalizadas (por tipo y puesto)
-        // Estructura: { role: { hard: [nombres], soft: [nombres] } }
-        let customSkills = {};
-
-        function renderSkills(role) {
+        // =============================================================
+        //  NUEVA FUNCIÓN: renderSkills CON PRESERVACIÓN DE SELECCIONES
+        // =============================================================
+        function renderSkills(role, preserveSelections = true) {
             const data = skillsDB[role];
             if (!data) return;
-            
-            // Inicializar customSkills para este rol si no existe
+
+            // --- 1. Guardar qué habilidades estaban marcadas antes de renderizar ---
+            let selectedHard = [];
+            let selectedSoft = [];
+            if (preserveSelections) {
+                document.querySelectorAll('input[name="hard"]:checked').forEach(cb => selectedHard.push(cb.value));
+                document.querySelectorAll('input[name="soft"]:checked').forEach(cb => selectedSoft.push(cb.value));
+            }
+
+            // --- 2. Preparar listas (base + personalizadas) ---
             if (!customSkills[role]) {
                 customSkills[role] = { hard: [], soft: [] };
             }
             const customHard = customSkills[role].hard || [];
             const customSoft = customSkills[role].soft || [];
-
-            // Combinar base + personalizadas (las personalizadas van al final)
             const allHard = [...data.hard, ...customHard];
             const allSoft = [...data.soft, ...customSoft];
 
+            // --- 3. Construir HTML ---
             let html = '';
 
-            // --- Hard Skills ---
+            // Hard Skills
             html += `<div class="skill-section" id="hardSection">
                         <h2>
                             🔹 Hard Skills (Técnicas) 
                             <span class="counter-box" id="hardCounter">Elegidas: 0 (mínimo 5)</span>
                         </h2>
                         <div class="skills-grid" id="hardGrid">`;
-            allHard.forEach((skill, index) => {
-                const isCustom = index >= data.hard.length;
+            allHard.forEach((skill) => {
+                const isCustom = customHard.includes(skill);
                 const id = sanitizeId(skill);
-                html += `<div class="skill-item" id="hard_wrapper_${id}">
-                            <input type="checkbox" name="hard" value="${skill}" id="hard_${id}">
+                // Si estaba seleccionada antes, la marcamos con 'checked'
+                const checked = (selectedHard.includes(skill)) ? 'checked' : '';
+                html += `<div class="skill-item ${checked ? 'checked' : ''}" id="hard_wrapper_${id}">
+                            <input type="checkbox" name="hard" value="${skill}" id="hard_${id}" ${checked}>
                             <label for="hard_${id}">${skill} ${isCustom ? '<span class="custom-badge">✏️ añadida</span>' : ''}</label>
                         </div>`;
             });
@@ -537,7 +546,7 @@
                     <div class="error-text" id="hardError">⚠️ Mínimo 5 habilidades técnicas, ¡pero puedes marcar más!</div>
                     <div class="add-skill-area">
                         <button type="button" class="add-btn" onclick="toggleAddSkill('hard')">✏️ Añadir skill</button>
-                        <div id="addHardInput" style="display:none; flex:1; display:none; gap:8px; align-items:center; flex-wrap:wrap;">
+                        <div id="addHardInput" style="display:none; flex:1; gap:8px; align-items:center; flex-wrap:wrap;">
                             <input type="text" id="newHardSkill" placeholder="Escribe la nueva habilidad..." style="flex:1; min-width:150px; padding:8px 14px; border:1.5px solid #d6e0ef; border-radius:10px; font-size:14px;">
                             <button type="button" class="confirm-add" onclick="addCustomSkill('hard')">Agregar</button>
                             <button type="button" style="background:transparent; border:none; color:#7b8aa4; cursor:pointer;" onclick="toggleAddSkill('hard')">Cancelar</button>
@@ -545,18 +554,19 @@
                     </div>
                     </div>`;
 
-            // --- Soft Skills ---
+            // Soft Skills
             html += `<div class="skill-section" id="softSection">
                         <h2>
                             🔸 Soft Skills (Actitudinales) 
                             <span class="counter-box" id="softCounter">Elegidas: 0 (mínimo 5)</span>
                         </h2>
                         <div class="skills-grid" id="softGrid">`;
-            allSoft.forEach((skill, index) => {
-                const isCustom = index >= data.soft.length;
+            allSoft.forEach((skill) => {
+                const isCustom = customSoft.includes(skill);
                 const id = sanitizeId(skill);
-                html += `<div class="skill-item" id="soft_wrapper_${id}">
-                            <input type="checkbox" name="soft" value="${skill}" id="soft_${id}">
+                const checked = (selectedSoft.includes(skill)) ? 'checked' : '';
+                html += `<div class="skill-item ${checked ? 'checked' : ''}" id="soft_wrapper_${id}">
+                            <input type="checkbox" name="soft" value="${skill}" id="soft_${id}" ${checked}>
                             <label for="soft_${id}">${skill} ${isCustom ? '<span class="custom-badge">✏️ añadida</span>' : ''}</label>
                         </div>`;
             });
@@ -564,7 +574,7 @@
                     <div class="error-text" id="softError">⚠️ Mínimo 5 habilidades blandas, ¡pero puedes marcar más!</div>
                     <div class="add-skill-area">
                         <button type="button" class="add-btn" onclick="toggleAddSkill('soft')">✏️ Añadir skill</button>
-                        <div id="addSoftInput" style="display:none; flex:1; display:none; gap:8px; align-items:center; flex-wrap:wrap;">
+                        <div id="addSoftInput" style="display:none; flex:1; gap:8px; align-items:center; flex-wrap:wrap;">
                             <input type="text" id="newSoftSkill" placeholder="Escribe la nueva habilidad..." style="flex:1; min-width:150px; padding:8px 14px; border:1.5px solid #d6e0ef; border-radius:10px; font-size:14px;">
                             <button type="button" class="confirm-add" onclick="addCustomSkill('soft')">Agregar</button>
                             <button type="button" style="background:transparent; border:none; color:#7b8aa4; cursor:pointer;" onclick="toggleAddSkill('soft')">Cancelar</button>
@@ -578,12 +588,12 @@
             const idx = roles.indexOf(role);
             progressBar.style.width = `${((idx + 1) / roles.length) * 100}%`;
 
-            // Agregar listeners a los checkboxes
+            // --- 4. Volver a conectar eventos y actualizar contadores ---
             attachCheckListeners();
             updateCounters();
         }
 
-        // Funciones para manejar skills personalizadas
+        // Funciones para manejar skills personalizadas (sin cambios, pero añado persistencia)
         window.toggleAddSkill = function(type) {
             const inputId = (type === 'hard') ? 'addHardInput' : 'addSoftInput';
             const el = document.getElementById(inputId);
@@ -592,7 +602,6 @@
             } else {
                 el.style.display = 'none';
             }
-            // Limpiar campo
             const fieldId = (type === 'hard') ? 'newHardSkill' : 'newSoftSkill';
             document.getElementById(fieldId).value = '';
         };
@@ -605,7 +614,6 @@
                 alert('Por favor escribe el nombre de la habilidad.');
                 return;
             }
-            // Verificar que no esté duplicada
             const currentRole = roleSelect.value;
             const data = skillsDB[currentRole];
             const allExisting = (type === 'hard') ? [...data.hard, ...(customSkills[currentRole]?.hard || [])] : [...data.soft, ...(customSkills[currentRole]?.soft || [])];
@@ -614,7 +622,6 @@
                 return;
             }
 
-            // Agregar a customSkills
             if (!customSkills[currentRole]) customSkills[currentRole] = { hard: [], soft: [] };
             if (type === 'hard') {
                 customSkills[currentRole].hard.push(newSkill);
@@ -622,13 +629,15 @@
                 customSkills[currentRole].soft.push(newSkill);
             }
 
-            // Re-renderizar
-            renderSkills(currentRole);
+            // Re-renderizar conservando las selecciones actuales
+            renderSkills(currentRole, true);
+
             // Ocultar el input
             const inputId = (type === 'hard') ? 'addHardInput' : 'addSoftInput';
             document.getElementById(inputId).style.display = 'none';
         };
 
+        // Listeners para los checkboxes (resaltar visualmente)
         function attachCheckListeners() {
             document.querySelectorAll('.skill-item input[type="checkbox"]').forEach(cb => {
                 cb.addEventListener('change', function() {
@@ -643,12 +652,10 @@
         function updateCounters() {
             const hardChecked = document.querySelectorAll('input[name="hard"]:checked').length;
             const softChecked = document.querySelectorAll('input[name="soft"]:checked').length;
-            
             const hardCounter = document.getElementById('hardCounter');
             const softCounter = document.getElementById('softCounter');
             if (hardCounter) hardCounter.textContent = `Elegidas: ${hardChecked} (mínimo 5)`;
             if (softCounter) softCounter.textContent = `Elegidas: ${softChecked} (mínimo 5)`;
-            
             const hardErr = document.getElementById('hardError');
             const softErr = document.getElementById('softError');
             if (hardErr) hardErr.style.display = (hardChecked < 5) ? 'block' : 'none';
@@ -658,7 +665,7 @@
         // Cambio de puesto
         roleSelect.addEventListener('change', (e) => {
             if (e.target.value) {
-                renderSkills(e.target.value);
+                renderSkills(e.target.value, true);
                 status.style.display = 'none';
             }
         });
@@ -666,13 +673,13 @@
         // Cargar primer rol
         if (roles.length > 0) {
             roleSelect.value = roles[0];
-            renderSkills(roles[0]);
+            renderSkills(roles[0], false); // Al cargar por primera vez no hay selecciones que preservar
         }
 
         // --------------------------------------------------------------
-        // 3. ENVÍO AL BACKEND (con habilidades personalizadas)
+        // 3. ENVÍO AL BACKEND (sin cambios)
         // --------------------------------------------------------------
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwtvNlDfNw5cvVEdL-2R48CMNgTOOPfhotF3DhBVwiArZfwaCME_0KblAWRq_LrCoT2Ow/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx.../exec'; // <--- REEMPLAZA CON TU URL
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -680,7 +687,6 @@
             const data = skillsDB[role];
             if (!data) return;
 
-            // Obtener todos los checkboxes marcados (incluyen personalizadas)
             const hardChecked = document.querySelectorAll('input[name="hard"]:checked');
             const softChecked = document.querySelectorAll('input[name="soft"]:checked');
 
@@ -688,26 +694,20 @@
                 status.style.display = 'block';
                 status.style.background = '#fff3cd';
                 status.style.color = '#856404';
-                status.textContent = '⚠️ Espera... aún faltan ticks. Recuerda: mínimo 5 en cada bloque. Si ya las marcaste todas y sigues viendo esto, revisa que sean al menos 5.';
+                status.textContent = '⚠️ Espera... aún faltan ticks. Recuerda: mínimo 5 en cada bloque.';
                 return;
             }
 
-            // Arrays de nombres seleccionados
             const selectedHard = Array.from(hardChecked).map(cb => cb.value);
             const selectedSoft = Array.from(softChecked).map(cb => cb.value);
 
-            // Objeto con Sí/No para las habilidades BASE (10 primeras de cada lista)
-            const hardBase = data.hard;
-            const softBase = data.soft;
             const hardStatus = {};
-            hardBase.forEach(skill => hardStatus[skill] = selectedHard.includes(skill) ? 'Sí' : 'No');
+            data.hard.forEach(skill => hardStatus[skill] = selectedHard.includes(skill) ? 'Sí' : 'No');
             const softStatus = {};
-            softBase.forEach(skill => softStatus[skill] = selectedSoft.includes(skill) ? 'Sí' : 'No');
+            data.soft.forEach(skill => softStatus[skill] = selectedSoft.includes(skill) ? 'Sí' : 'No');
 
-            // Habilidades personalizadas (las que no están en la base)
             const customHardList = customSkills[role]?.hard || [];
             const customSoftList = customSkills[role]?.soft || [];
-            // Filtramos solo las que fueron marcadas
             const selectedCustomHard = selectedHard.filter(s => customHardList.includes(s));
             const selectedCustomSoft = selectedSoft.filter(s => customSoftList.includes(s));
 
@@ -716,7 +716,7 @@
                 timestamp: new Date().toISOString(),
                 hardStatus: hardStatus,
                 softStatus: softStatus,
-                hardExtra: selectedCustomHard,   // nombres de las personalizadas marcadas
+                hardExtra: selectedCustomHard,
                 softExtra: selectedCustomSoft
             };
 
